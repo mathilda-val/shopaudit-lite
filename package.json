@@ -1,7 +1,7 @@
 {
-  "name": "shopaudit-lite",
-  "version": "1.0.0",
-  "description": "One-click SEO audit for Shopify stores",
+  "name": "shopaudit",
+  "version": "2.0.0",
+  "description": "Free SEO audit tool — 22 checks in 30 seconds",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,8 +12,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12",
-    "lighthouse": "^11.0.0"
+    "cheerio": "^1.0.0-rc.12"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

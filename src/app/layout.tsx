@@ -5,9 +5,9 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ShopAudit Lite — Free SEO Audit for Shopify Stores',
-  description: 'Get instant SEO insights for your Shopify store. Check meta tags, images, links, and more. Free one-click audit.',
-  keywords: 'shopify seo, shopify audit, ecommerce seo, store optimization',
+  title: 'ShopAudit — Free SEO Audit Tool | 22 Checks in 30 Seconds',
+  description: 'Instant SEO audit for any website. 22 checks across meta tags, content, images, technical SEO, social sharing, and performance. Free. No signup.',
+  keywords: 'seo audit, shopify seo, website audit, ecommerce seo, free seo tool',
 };
 
 export default function RootLayout({

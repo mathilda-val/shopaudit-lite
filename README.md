@@ -1,62 +1,40 @@
-# 🔍 ShopAudit Lite
+# 🔍 ShopAudit — Free SEO Audit Tool
 
-Free SEO Audit for Shopify Stores — One-click SEO insights.
+**22 SEO checks in 30 seconds.** No signup. No API keys. Just paste a URL.
 
-**Live Demo:** Coming soon on Vercel
+## What It Checks
 
-## Features
+| Category | Checks |
+|----------|--------|
+| 🏷️ Meta | Title, description, canonical URL, language attribute |
+| 📝 Content | H1 heading, heading hierarchy, word count |
+| 🖼️ Images | Alt text coverage, lazy loading |
+| ⚙️ Technical | HTTPS, viewport, favicon, structured data, robots meta, robots.txt, sitemap |
+| 📣 Social | Open Graph (title, image, desc), Twitter card |
+| ⚡ Performance | Response time, HTML size |
 
-- **8 SEO Checks:**
-  - Meta Title (length validation)
-  - Meta Description (length validation)  
-  - H1 Heading (single H1 check)
-  - Image Alt Text (missing alt finder)
-  - Internal Links (broken link detection)
-  - Mobile Viewport
-  - HTTPS check
-  - Canonical URL
-
-- **Beautiful UI** with gradient design
-- **Instant Results** with severity scores
-- **Actionable Insights** with fix recommendations
-
-## Quick Start
+## Getting Started
 
 ```bash
 npm install
 npm run dev
-# Visit http://localhost:3000
 ```
 
-## API Usage
-
-```bash
-curl -X POST http://localhost:3000/api/audit \
-  -H "Content-Type: application/json" \
-  -d '{"url":"your-store.myshopify.com"}'
-```
-
-**Response:**
-```json
-{
-  "url": "https://your-store.myshopify.com",
-  "score": 75,
-  "checks": [...],
-  "summary": { "critical": 1, "warnings": 2, "passed": 5 }
-}
-```
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- Cheerio (HTML parsing)
+- **Next.js 14** (App Router)
+- **Tailwind CSS** 
+- **Cheerio** (HTML parsing)
+- **Axios** (HTTP)
 
-## Deploy to Vercel
+## Deploy
+
+Works out of the box on Vercel:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mathilda-val/shopaudit-lite)
 
 ## License
 
-MIT — Built with 🐾 by Mathilda
+MIT — Built with 🐾 by [Mathilda](https://mathilda-val.github.io/mathiasmdesign/)
