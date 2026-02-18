@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import jsPDF from 'jspdf';
 
 interface AuditCheck {
   id: string;
@@ -78,6 +79,164 @@ export default function Home() {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+  };
+
+  const generatePDF = (data: AuditResult) => {
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210;
+    const margin = 18;
+    const contentW = W - margin * 2;
+    let y = 20;
+
+    const addPage = () => { pdf.addPage(); y = 20; };
+    const checkSpace = (need: number) => { if (y + need > 275) addPage(); };
+
+    // Header
+    pdf.setFillColor(10, 10, 15);
+    pdf.rect(0, 0, W, 50, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(24);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('ShopAudit SEO Report', margin, 22);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(160, 160, 180);
+    pdf.text(data.url, margin, 30);
+    pdf.text(`Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, margin, 36);
+
+    // Grade badge
+    const gradeColors: Record<string, [number, number, number]> = {
+      'A+': [16, 185, 129], 'A': [16, 185, 129], 'B': [59, 130, 246],
+      'C': [245, 158, 11], 'D': [239, 68, 68], 'F': [239, 68, 68],
+    };
+    const gc = gradeColors[data.grade] || [239, 68, 68];
+    pdf.setFillColor(gc[0], gc[1], gc[2]);
+    pdf.roundedRect(W - margin - 28, 10, 28, 28, 4, 4, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(data.grade, W - margin - 14, 28, { align: 'center' });
+    pdf.setFontSize(8);
+    pdf.text(`${data.score}/100`, W - margin - 14, 34, { align: 'center' });
+
+    y = 58;
+
+    // Summary bar
+    pdf.setFillColor(245, 245, 250);
+    pdf.roundedRect(margin, y, contentW, 14, 2, 2, 'F');
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(220, 38, 38);
+    pdf.text(`● ${data.summary.critical} Critical`, margin + 6, y + 9);
+    pdf.setTextColor(245, 158, 11);
+    pdf.text(`● ${data.summary.warnings} Warnings`, margin + 50, y + 9);
+    pdf.setTextColor(16, 185, 129);
+    pdf.text(`● ${data.summary.passed} Passed`, margin + 98, y + 9);
+
+    if (data.meta.isShopify) {
+      pdf.setTextColor(16, 185, 129);
+      pdf.text('✓ Shopify Store', margin + contentW - 35, y + 9);
+    }
+
+    y += 22;
+
+    // Quick stats
+    pdf.setTextColor(100, 100, 120);
+    pdf.setFontSize(8);
+    const stats = [`Response: ${data.meta.responseTimeMs}ms`, `HTML: ${data.meta.htmlSizeKb}KB`];
+    if (data.meta.title) stats.push(`Title: ${data.meta.title.substring(0, 50)}`);
+    pdf.text(stats.join('  •  '), margin, y);
+    y += 10;
+
+    // Checks by category
+    const categoryLabels: Record<string, string> = {
+      meta: 'Meta Tags', content: 'Content', images: 'Images',
+      technical: 'Technical SEO', social: 'Social Sharing', performance: 'Performance',
+    };
+    const statusIcons: Record<string, { label: string; color: [number, number, number] }> = {
+      critical: { label: 'FAIL', color: [220, 38, 38] },
+      warning: { label: 'WARN', color: [245, 158, 11] },
+      passed: { label: 'PASS', color: [16, 185, 129] },
+      info: { label: 'INFO', color: [100, 116, 139] },
+    };
+
+    for (const catKey of ['meta', 'content', 'images', 'technical', 'social', 'performance']) {
+      const catChecks = data.checks.filter(c => c.category === catKey);
+      if (catChecks.length === 0) continue;
+
+      checkSpace(20);
+      // Category header
+      pdf.setFillColor(240, 240, 248);
+      pdf.roundedRect(margin, y, contentW, 9, 2, 2, 'F');
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(30, 30, 50);
+      const catPassed = catChecks.filter(c => c.status === 'passed').length;
+      pdf.text(categoryLabels[catKey] || catKey, margin + 4, y + 6.5);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(120, 120, 140);
+      pdf.text(`${catPassed}/${catChecks.length} passed`, margin + contentW - 4, y + 6.5, { align: 'right' });
+      y += 13;
+
+      for (const check of catChecks) {
+        const si = statusIcons[check.status];
+        const lines: string[] = [];
+        lines.push(check.message);
+        if (check.details) check.details.forEach(d => lines.push(`  • ${d}`));
+        if (check.fix) lines.push(`  💡 ${check.fix}`);
+
+        const estimatedH = 7 + lines.length * 4;
+        checkSpace(estimatedH);
+
+        // Status badge
+        pdf.setFillColor(si.color[0], si.color[1], si.color[2]);
+        pdf.roundedRect(margin + 2, y, 12, 5, 1, 1, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(6);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(si.label, margin + 8, y + 3.5, { align: 'center' });
+
+        // Check name
+        pdf.setTextColor(30, 30, 50);
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(check.name, margin + 18, y + 4);
+        y += 7;
+
+        // Details
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        for (const line of lines) {
+          checkSpace(5);
+          if (line.startsWith('  💡')) {
+            pdf.setTextColor(59, 130, 246);
+          } else {
+            pdf.setTextColor(80, 80, 100);
+          }
+          const wrapped = pdf.splitTextToSize(line, contentW - 20);
+          for (const wl of wrapped) {
+            pdf.text(wl, margin + 18, y);
+            y += 4;
+          }
+        }
+        y += 3;
+      }
+      y += 4;
+    }
+
+    // Footer
+    checkSpace(20);
+    pdf.setDrawColor(220, 220, 230);
+    pdf.line(margin, y, W - margin, y);
+    y += 8;
+    pdf.setTextColor(140, 140, 160);
+    pdf.setFontSize(7);
+    pdf.text('Generated by ShopAudit — Free SEO Audit Tool • shopaudit.dev', W / 2, y, { align: 'center' });
+
+    // Save
+    const domain = new URL(data.url).hostname.replace('www.', '');
+    pdf.save(`shopaudit-${domain}-${new Date().toISOString().slice(0, 10)}.pdf`);
   };
 
   const statusStyles: Record<string, { bg: string; border: string; icon: string }> = {
@@ -193,10 +352,16 @@ export default function Home() {
               </div>
 
               {/* Quick Stats */}
-              <div className="border-t border-white/5 px-8 py-4 flex flex-wrap gap-6 text-xs text-gray-400">
+              <div className="border-t border-white/5 px-8 py-4 flex flex-wrap items-center gap-6 text-xs text-gray-400">
                 <span>⏱ {result.meta.responseTimeMs}ms response</span>
                 <span>📦 {result.meta.htmlSizeKb}KB HTML</span>
                 {result.meta.title && <span className="truncate max-w-xs">🏷 {result.meta.title}</span>}
+                <button
+                  onClick={() => generatePDF(result)}
+                  className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-xs font-medium rounded-lg transition-all hover:shadow-lg"
+                >
+                  📄 Download PDF Report
+                </button>
               </div>
             </div>
 

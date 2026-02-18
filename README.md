@@ -1,40 +1,58 @@
 # 🔍 ShopAudit — Free SEO Audit Tool
 
-**22 SEO checks in 30 seconds.** No signup. No API keys. Just paste a URL.
+**22 SEO checks in 30 seconds.** No signup. No limits. PDF export included.
 
-## What It Checks
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mathilda-val/shopaudit-lite)
+
+## Features
+
+- **22 checks** across 6 categories: Meta Tags, Content, Images, Technical SEO, Social Sharing, Performance
+- **Letter grade** (A+ to F) with color-coded score card
+- **PDF export** — download a professional audit report
+- **Shopify detection** — auto-detects Shopify stores
+- **How-to-fix** guidance for every failing check
+- **Dark UI** — clean, modern design
+- **No API keys needed** — runs entirely on server-side HTML analysis
+
+## Checks
 
 | Category | Checks |
 |----------|--------|
-| 🏷️ Meta | Title, description, canonical URL, language attribute |
-| 📝 Content | H1 heading, heading hierarchy, word count |
-| 🖼️ Images | Alt text coverage, lazy loading |
-| ⚙️ Technical | HTTPS, viewport, favicon, structured data, robots meta, robots.txt, sitemap |
-| 📣 Social | Open Graph (title, image, desc), Twitter card |
-| ⚡ Performance | Response time, HTML size |
+| 🏷️ Meta Tags | Title, Description, Canonical URL, Language |
+| 📝 Content | H1 Heading, Heading Hierarchy, Word Count |
+| 🖼️ Images | Alt Text, Lazy Loading |
+| ⚙️ Technical | HTTPS, Viewport, Favicon, Structured Data, Robots Meta, robots.txt, Sitemap |
+| 📣 Social | OG Title, OG Image, OG Description, Twitter Card |
+| ⚡ Performance | Response Time, HTML Size |
 
-## Getting Started
+## Quick Start
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
-
-## Tech Stack
-
-- **Next.js 14** (App Router)
-- **Tailwind CSS** 
-- **Cheerio** (HTML parsing)
-- **Axios** (HTTP)
+Open [localhost:3000](http://localhost:3000).
 
 ## Deploy
 
-Works out of the box on Vercel:
+One-click deploy to Vercel (button above), or:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mathilda-val/shopaudit-lite)
+```bash
+npx vercel
+```
+
+## Stack
+
+- Next.js 14 (App Router)
+- Tailwind CSS
+- Cheerio (HTML parsing)
+- jsPDF (PDF generation)
 
 ## License
 
-MIT — Built with 🐾 by [Mathilda](https://mathilda-val.github.io/mathiasmdesign/)
+MIT
+
+---
+
+Built with 🐾 by [Mathilda](https://mathiasmdesign.com)
